@@ -1,0 +1,81 @@
+#N canvas 0 92 1824 843 10;
+#X obj 505 285 s adc0;
+#X obj 566 285 s adc1;
+#X obj 628 285 s adc2;
+#X obj 692 285 s adc3;
+#X obj 752 285 s adc4;
+#X obj 816 285 s adc5;
+#X obj 66 169 loadbang;
+#X obj 66 195 delay 300;
+#X msg 66 221 \; pd dsp 1 \;;
+#X obj 69 308 r adc0;
+#X obj 125 308 r adc1;
+#X obj 182 308 r adc2;
+#X obj 240 308 r adc3;
+#X obj 297 308 r adc4;
+#X obj 354 308 r adc5;
+#X obj 68 385 pack f f f f f f f f;
+#X obj 68 411 print adc:;
+#X msg 524 120 open;
+#X obj 646 69 r initbang;
+#X obj 187 212 s initbang;
+#X msg 757 134 open adc;
+#X obj 646 138 metro 10;
+#X obj 646 181 terminal_tedium_adc;
+#X msg 403 166 smooth 4;
+#X msg 402 121 deadband 2;
+#X text 862 48 the "open" message opens the device. - don't supply
+any parameter for use with the wm8731 version (= 6 ADC channels) -
+use "open adc" for use with pcm5102a version (= 8 ADC channels). the
+metro object determines the update rate (in ms).;
+#X text 863 127 the "smooth" message adds (optional) averaging (not
+connected in this example): 1 \, 2 \, 4 \, 8 \, and 16 are the options
+(defaults to 1 \, ie no averaging) the "deadband" message can be used
+to add some hysteresis (ditto: not connected here): 0 \, 1 \, 2 \,
+3 \, 4 \, and 5 are legal values (default is 0).;
+#X obj 320 641 dac~;
+#X obj 317 572 lop~;
+#X floatatom 46 550 5 0 0 0 - - -;
+#X obj 879 282 s~ adc6;
+#X obj 939 282 s~ adc7;
+#X obj 354 337 r~ adc6;
+#X obj 354 369 r~ adc7;
+#X obj 318 603 *~ 0;
+#X obj 546 443 vu 15 120 empty empty -1 -8 0 10 -66577 -1 1 0;
+#X obj 502 518 env~;
+#X obj 500 550 -~ 100;
+#X connect 6 0 7 0;
+#X connect 7 0 8 0;
+#X connect 7 0 19 0;
+#X connect 9 0 15 0;
+#X connect 9 0 29 0;
+#X connect 10 0 15 1;
+#X connect 11 0 15 2;
+#X connect 12 0 15 3;
+#X connect 13 0 15 4;
+#X connect 14 0 15 5;
+#X connect 15 0 16 0;
+#X connect 17 0 22 0;
+#X connect 18 0 17 0;
+#X connect 18 0 20 0;
+#X connect 18 0 21 0;
+#X connect 21 0 22 0;
+#X connect 22 0 0 0;
+#X connect 22 1 1 0;
+#X connect 22 2 2 0;
+#X connect 22 3 3 0;
+#X connect 22 4 4 0;
+#X connect 22 5 5 0;
+#X connect 22 6 30 0;
+#X connect 22 7 31 0;
+#X connect 23 0 22 0;
+#X connect 24 0 22 0;
+#X connect 28 0 34 0;
+#X connect 32 0 15 6;
+#X connect 32 0 28 0;
+#X connect 32 0 36 0;
+#X connect 33 0 15 7;
+#X connect 34 0 27 1;
+#X connect 34 0 27 0;
+#X connect 35 1 37 0;
+#X connect 36 0 37 0;
