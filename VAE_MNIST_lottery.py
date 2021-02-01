@@ -3,6 +3,9 @@
 Created on Sat Dec  5 13:02:27 2020
 @author: louis
 """
+
+
+
 import torch
 import torch.utils.data
 from torch import nn, optim
@@ -10,6 +13,7 @@ from torch.nn import functional as F
 from torchvision import datasets, transforms
 from torchvision.utils import save_image
 import numpy as np
+import torch.nn.utils.prune as prune
 import matplotlib.pyplot as plt
 
 if torch.cuda.is_available():
@@ -80,9 +84,7 @@ def loss_function(recon_x, x, mu, logvar, beta):
     and x (input of the VAE)
     """
     BCE = F.binary_cross_entropy(recon_x, x.view(-1, 784), reduction='sum')
-
     KLD = 0.5 * torch.sum(logvar.exp() + mu.pow(2) - 1 - logvar)
-
     return BCE + beta*KLD
 
 
@@ -156,61 +158,58 @@ mnist_testset = test_loader = torch.utils.data.DataLoader(
                   batch_size=batch_size, shuffle=True)
 
 model = VAE().to(device)
+print(model.parameters)
+
+
+#local pruning
+for name, module in model.named_modules():
+    # prune 20% of connections in all 2D-conv layers
+    if isinstance(module, torch.nn.Conv2d):
+        prune.l1_unstructured(module, name='weight', amount=0.2)
+    # prune 40% of connections in all linear layers
+    elif isinstance(module, torch.nn.Linear):
+        prune.l1_unstructured(module, name='weight', amount=0.4)
+
+
+
+
+
+
+def stats_pruning(model):
+    global_null_weights = 0
+    global_total_weights = 0
+    print("Model :")
+    for module in model.children():
+        print(module)
+        null_weights = float(torch.sum(module.weight == 0))
+        layer_weights = float(module.weight.nelement())
+        print("Sparsity in {}: {:.2f}%".format(name, 100. * null_weights / layer_weights ))
+        global_total_weights += layer_weights
+        global_null_weights += null_weights
+
+    print("Global Sparsity : {:.2f}%".format( 100. * global_null_weights / global_total_weights))
+
+
+
+stats_pruning(model)
+
+
+#def pruning_layer():
+
+
 optimizer = optim.Adam(model.parameters(), lr=7e-4)
 step = 0
 
 
-if __name__ == "__main__":
-    plt_loss = []
+# if __name__ == "__main__":
+#     plt_loss = []
 
-    for epoch in range(1, epochs + 1):
-        train()
-        #test()
+#     for epoch in range(1, epochs + 1):
+#         train()
+#         #test()
         
-        with torch.no_grad():
-            sample = torch.randn(64, 40).to(device)
-            sample = model.decode(sample).to(device)
-            save_image(sample.view(64, 1, 28, 28),
-                        'results/sample_' + str(epoch) + '.png')
+#         with torch.no_grad():
+#             sample = torch.randn(64, 40).to(device)
+#             sample = model.decode(sample).to(device)
+#             save_image(sample.view(64, 1, 28, 28), 'results/sample_' + str(epoch) + '.png')
     
-    '''
-    plt.rcParams.update({
-        "text.usetex": True})
-    plt.plot(np.linspace(1,epochs,epochs*10-1).tolist(),plt_loss[1:],
-             label=r'$\beta = 0$')
-    plt.xticks(np.arange(1, epochs+1, step=1))
-    plt.xlabel(r'$Epoch$')
-    plt.ylabel(r'$Loss$')
-    plt.xlim((0,epochs+1))
-    plt.grid()
-    plt.legend()
-    #plt.savefig('VAEMNIST_loss_beta_constant.eps', dpi=600, format='eps')
-    #plt.savefig('VAEMNIST_loss_beta_varying.eps', dpi=600, format='eps')
-    plt.savefig('VAEMNIST_loss_beta.pdf')
-    plt.show()
-    '''
-
-    '''
-    digitset = torch.load('digitset_interpolation.pt')
-    recon_batch, mu, logvar = model(digitset)
-    z = model.reparameterize(mu,logvar)
-    z6 = z[0]
-    z2 = z[1]
-    z7 = z[2]
-    z1 = z[3]
-    Nx = Ny = 10
-    zg = torch.zeros(Ny,z.size(1))
-    zd = torch.zeros(Ny,z.size(1))
-    Z  = torch.zeros(Nx, Ny, z.size(1))
-    
-    for i in range(Ny):
-        zg[i] = ((z2*i + (Ny-i)*z6)/Ny)
-        zd[i] = ((z1*i + (Ny-i)*z7)/Ny)
-    
-    for j in range(Nx):
-        Z[j] = (zd*j + (Nx-j)*zg)/Nx
-        
-    sample = model.decode(Z.to(device)).to(device)
-    save_image(sample.view(Nx*Ny, 1, 28, 28),
-    'results/LATENTSPACE.png',nrow = Ny)
-    '''
