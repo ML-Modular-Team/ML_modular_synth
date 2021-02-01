@@ -201,9 +201,15 @@ def pruning_layer(layer, amount):
     cutting_index = int(amount*w.shape[0])
     indexes_to_remove = indexes[:cutting_index]
     weights[indexes_to_remove]=0
-    weights.grad[indexes_to_remove]=None
+
+
+    # #weights.grad[indexes_to_remove]=None
+    # for w in weights[indexes_to_remove]:
+    #     w.grad=0
     weights.reshape(layer.weight.shape)
     layer.weight = torch.nn.Parameter(weights)
+    # for w in layer.weight:
+    #     print(w.grad)
     
 
 
