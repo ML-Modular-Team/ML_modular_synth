@@ -161,14 +161,14 @@ model = VAE().to(device)
 print(model.parameters)
 
 
-#local pruning
-for name, module in model.named_modules():
-    # prune 20% of connections in all 2D-conv layers
-    if isinstance(module, torch.nn.Conv2d):
-        prune.l1_unstructured(module, name='weight', amount=0.2)
-    # prune 40% of connections in all linear layers
-    elif isinstance(module, torch.nn.Linear):
-        prune.l1_unstructured(module, name='weight', amount=0.4)
+# #local pruning
+# for name, module in model.named_modules():
+#     # prune 20% of connections in all 2D-conv layers
+#     if isinstance(module, torch.nn.Conv2d):
+#         prune.l1_unstructured(module, name='weight', amount=0.2)
+#     # prune 40% of connections in all linear layers
+#     elif isinstance(module, torch.nn.Linear):
+#         prune.l1_unstructured(module, name='weight', amount=0.4)
 
 
 
@@ -191,11 +191,28 @@ def stats_pruning(model):
 
 
 
+
+
+
+
+def pruning_layer(layer, amount):
+    weights = layer.weight.clone().flatten()
+    w, indexes = torch.sort(weights.abs())
+    cutting_index = int(amount*w.shape[0])
+    indexes_to_remove = indexes[:cutting_index]
+    weights[indexes_to_remove]=0
+    weights.grad[indexes_to_remove]=None
+    weights.reshape(layer.weight.shape)
+    layer.weight = torch.nn.Parameter(weights)
+    
+
+
+for name, module in model.named_modules():
+    if isinstance(module, torch.nn.Linear):
+        pruning_layer(module,0.3)
+
+
 stats_pruning(model)
-
-
-#def pruning_layer():
-
 
 optimizer = optim.Adam(model.parameters(), lr=7e-4)
 step = 0
