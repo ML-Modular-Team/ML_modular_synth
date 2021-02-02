@@ -15,6 +15,7 @@ from torchvision.utils import save_image
 import numpy as np
 import torch.nn.utils.prune as prune
 import matplotlib.pyplot as plt
+from pruning import Pruning_tool
 
 if torch.cuda.is_available():
     device = torch.device("cuda:0")
@@ -175,19 +176,6 @@ print(model.parameters)
 
 
 
-def stats_pruning(model):
-    global_null_weights = 0
-    global_total_weights = 0
-    print("Model :")
-    for module in model.children():
-        print(module)
-        null_weights = float(torch.sum(module.weight == 0))
-        layer_weights = float(module.weight.nelement())
-        print("Sparsity in {}: {:.2f}%".format(name, 100. * null_weights / layer_weights ))
-        global_total_weights += layer_weights
-        global_null_weights += null_weights
-
-    print("Global Sparsity : {:.2f}%".format( 100. * global_null_weights / global_total_weights))
 
 
 
@@ -195,30 +183,19 @@ def stats_pruning(model):
 
 
 
-def pruning_layer(layer, amount):
-    weights = layer.weight.clone().flatten()
-    w, indexes = torch.sort(weights.abs())
-    cutting_index = int(amount*w.shape[0])
-    indexes_to_remove = indexes[:cutting_index]
-    weights[indexes_to_remove]=0
-
-
-    # #weights.grad[indexes_to_remove]=None
-    # for w in weights[indexes_to_remove]:
-    #     w.grad=0
-    weights.reshape(layer.weight.shape)
-    layer.weight = torch.nn.Parameter(weights)
-    # for w in layer.weight:
-    #     print(w.grad)
     
+pr = Pruning_tool()
 
 
+#local pruning
 for name, module in model.named_modules():
     if isinstance(module, torch.nn.Linear):
-        pruning_layer(module,0.3)
+        #pr.pruning_layer(module,0.3)
+        print(module.weight.shape)
+        print(pr.get_mask(module, 0.3).shape)
 
+pr.stats_pruning(model)
 
-stats_pruning(model)
 
 optimizer = optim.Adam(model.parameters(), lr=7e-4)
 step = 0
