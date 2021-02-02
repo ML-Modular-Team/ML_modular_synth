@@ -190,9 +190,9 @@ pr = Pruning_tool()
 #local pruning
 for name, module in model.named_modules():
     if isinstance(module, torch.nn.Linear):
-        #pr.pruning_layer(module,0.3)
-        print(module.weight.shape)
-        print(pr.get_mask(module, 0.3).shape)
+        pr.pruning(module,0.3)
+
+        
 
 pr.stats_pruning(model)
 

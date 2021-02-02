@@ -30,15 +30,23 @@ class Pruning_tool:
         print("Global Sparsity : {:.2f}%".format( 100. * global_null_weights / global_total_weights))
 
 
-    def get_mask(self,layer, amount):
-        weights = layer.weight.clone().flatten()
+class Pruning:
+    def __init__(self,module):
+        self.module = module
+        self.mask = torch.ones_like(module.weight)
+
+
+    def set_mask(self, amount):
+        weights = self.module.weight.clone().flatten()
         w, _ = torch.sort(weights.abs())
         cutting_index = int(amount * w.shape[0])
         cutting_value = w[cutting_index]
 
-        mask = layer.weight.abs() > cutting_value
-        return mask
+        self.mask = self.module.weight.abs() > cutting_value
 
+    def __call__(self,module,input):
+        print("Mask : \n", self.mask)
+        print("Layer : \n", module)
+        module.weight.data = module.weight * self.mask
 
-
-
+    
