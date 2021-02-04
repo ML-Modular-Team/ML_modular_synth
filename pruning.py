@@ -31,22 +31,24 @@ class Pruning_tool:
 
 
 class Pruning:
-    def __init__(self,module):
-        self.module = module
-        self.mask = torch.ones_like(module.weight)
+    def __init__(self,module,amount):
+        self.mask = None
+        self.set_mask(module,amount)
+        module.weight.data = module.weight.data * self.mask
 
 
-    def set_mask(self, amount):
-        weights = self.module.weight.clone().flatten()
+    def set_mask(self,module, amount):
+        weights = module.weight.clone().flatten()
         w, _ = torch.sort(weights.abs())
         cutting_index = int(amount * w.shape[0])
         cutting_value = w[cutting_index]
+        self.mask = module.weight.abs() > cutting_value
 
-        self.mask = self.module.weight.abs() > cutting_value
-
-    def __call__(self,module,input):
-        print("Mask : \n", self.mask)
-        print("Layer : \n", module)
-        module.weight.data = module.weight * self.mask
+    def __call__(self,module,grad_input,grad_output):
+        #print("Mask : \n", self.mask)
+        #print("Layer : \n", module)
+        module.weight.grad.data = module.weight.grad.data * self.mask
+        
+        
 
     
