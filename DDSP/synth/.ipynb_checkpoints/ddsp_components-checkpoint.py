@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn.functional as f
 
+
 class HarmonicSynth():
     
     def __init__(self, samplerate=16000):
