@@ -28,26 +28,36 @@ class Pruning_tool:
             i += 1
 
         print("Global Sparsity : {:.2f}%".format( 100. * global_null_weights / global_total_weights))
+        
+    def compute_global_criterion(self, m, amount):
+        weights = torch.empty(0).cuda() if torch.cuda.is_available() else torch.empty(0)
 
-
-class Pruning:
-    def __init__(self,module,amount):
-        self.mask = None
-        self.set_mask(module,amount)
-        module.weight.data = module.weight.data * self.mask
-
-
-    def set_mask(self,module, amount):
-        weights = module.weight.clone().flatten()
+        for module in m.children():
+             weights = torch.cat((weights,module.weight.clone().flatten()),0)
         w, _ = torch.sort(weights.abs())
         cutting_index = int(amount * w.shape[0])
         cutting_value = w[cutting_index]
-        self.mask = module.weight.abs() > cutting_value
+        return cutting_value
 
-    def __call__(self,module,grad_input,grad_output):
-        #print("Mask : \n", self.mask)
-        #print("Layer : \n", module)
-        module.weight.grad.data = module.weight.grad.data * self.mask
+class Pruning:
+    def __init__(self,module):
+        self.mask = None
+        self.module = module
+
+
+    def set_mask_locally(self, amount):
+        weights = self.module.weight.clone().flatten()
+        w, _ = torch.sort(weights.abs())
+        cutting_index = int(amount * w.shape[0])
+        cutting_value = w[cutting_index]
+        self.mask = self.module.weight.abs() > cutting_value
+            
+    
+    def set_mask_globally(self, cutting_value):
+        self.mask = self.module.weight.abs() > cutting_value
+    
+    def __call__(self,module,inputs):
+        module.weight.data = module.weight.data * self.mask
         
         
 
