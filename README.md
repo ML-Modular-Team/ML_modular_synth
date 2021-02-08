@@ -42,7 +42,7 @@ When the signal is polyphonic, we have a superposition of several harmonic spect
 # Substraction of the harmonics
 In order to better discern the sounds that are in harmonic relation (and especially the sounds at the octave level) it is preferable not to totally subtract a sound from the mixture, but to try to subtract only its contribution at the level of each harmonic. For this, the principle of spectral smoothness is used.
 
-![dddd ](Images/spectral smoothness.png  "Substraction of the Harmonics" )
+![dddd ](Images/spectral_smoothness.png  "Substraction of the Harmonics" )
 
 
 
