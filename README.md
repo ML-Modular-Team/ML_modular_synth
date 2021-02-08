@@ -9,7 +9,11 @@ Your browser does not support the audio element.
 
 
 
-The spectral product is calculated by multiplying H compressed versions of the spectrum. Let's call $f_k = \frac{k}{N_{fft}}$ the discrete frequency of the DFT, we have \begin{equation}
+The spectral product is calculated by multiplying H compressed versions of the spectrum. Let's call 
+$f_k = \frac{k}{N_{fft}}$ 
+
+the discrete frequency of the DFT, we have 
+\begin{equation}
     P(f_k) = \prod_{h=1}^{H} |X(f_k h)|
 \end{equation}
 
