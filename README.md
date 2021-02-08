@@ -44,6 +44,9 @@ In order to better discern the sounds that are in harmonic relation (and especia
 
 ![dddd ](Images/spectral_smoothness.png  "Substraction of the Harmonics" )
 
+# Stop criterion
+
+The previous steps are then iterated until a certain stopping criterion is verified.
 
 
 
