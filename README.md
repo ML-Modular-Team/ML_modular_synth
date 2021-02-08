@@ -10,7 +10,10 @@ Your browser does not support the audio element.
 
 
 The spectral product is calculated by multiplying H compressed versions of the spectrum. Let's call 
-$f_k = \frac{k}{N_{fft}}$ 
+```math
+f_k = \frac{k}{N_{fft}}
+```
+
 
 the discrete frequency of the DFT, we have 
 \begin{equation}
