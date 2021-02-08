@@ -61,4 +61,34 @@ class Pruning:
         
         
 
+
+class PruningConv2D:
+    def __init__(self,module):
+        self.module = module
+        self.list_index_to_remove = []
+
+    def set_layers_list_locally(self, amount):
+        list_norms=[]
+        for idx, channel in enumerate(self.module.weight):
+            n = torch.norm(channel)
+            list_norms.append((n,idx))
+        list_norms.sort() # sort norms, first elt of tuple
+        cutting_index = int(amount * len(list_norms))
+        self.list_index_to_remove = [elt[1] for elt in list_norms[:cutting_index]]
+
+    def set_layers_list_globally(self, cutting_value):
+        self.list_index_to_remove=[]
+        for idx, channel in enumerate(self.module.weight):
+            n = torch.norm(channel)
+            if n<cutting_value:
+                self.list_index_to_remove.append(idx)
+        
     
+    def __call__(self,module,inputs):
+        for idx, channel in enumerate(module.weight):
+            if idx in self.list_index_to_remove:
+                channel = torch.zeros_like(channel)
+                
+        for idx, channel in enumerate(module.weight):
+            print("Channel ",idx)
+            print(channel)
