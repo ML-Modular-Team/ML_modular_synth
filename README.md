@@ -18,7 +18,7 @@ We calculate the DFT frequencies and amplitudes with the Fast Fourier Transform 
 
 We then calculate the vectors containing the spectral product frequencies and amplitudes. 
 ### Source loudness and its reconstruction for sample n°5
-![dddd ](Images/Spectrum.png "DFT of the signal")
+![dddd ](Images/Spectrum.png "DFT of the signal" width="200" height="200")
 
 
 The F0 is the value that has the maximum amplitude y and the minimum frequency
