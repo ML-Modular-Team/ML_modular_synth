@@ -1,1 +1,1 @@
-# ML_modular_synth
+# Spectral Product Algorithm 
