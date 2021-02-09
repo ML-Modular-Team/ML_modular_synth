@@ -48,6 +48,10 @@ In order to better discern the sounds that are in harmonic relation (and especia
 
 The previous steps are then iterated until a certain stopping criterion is verified.
 ![dddd ](Images/algorithm_process.png  "Substraction of the Harmonics" )
+
+
 ![ggg ](Images/algorithm_process2.png "Loudness Source et Loudness Reconstruite du sample 5")
+
+
 ![ggg ](Images/algorithm_process3.png "Loudness Source et Loudness Reconstruite du sample 5")
 
