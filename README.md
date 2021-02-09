@@ -36,7 +36,7 @@ We then calculate the vectors containing the spectral product frequencies and am
 
 
 When the signal is polyphonic, we have a superposition of several harmonic spectrum. The idea is to subtract the harmonic spectrum that corresponds to the f0 we estimated. In order to do so, we need to know where the different harmonics of the fundamental frequency are. The idea is to look for the maximum of the spectrum around each theorical harmics of frequency 
-![dddd ](https://render.githubusercontent.com/render/math?math=f_h = h \cdot f_0 "test")
+![dddd ](https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1)
 $f_h = h \cdot f_0$.
 ![dddd ](Images/substraction_harmonics.png  "Detection of the Harmonics" )
 
