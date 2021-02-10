@@ -46,33 +46,35 @@ class PruningTool:
                 pr.set_mask_locally(amount)
             module.register_forward_pre_hook(pr)
 
-    def stats_pruning(self, m):
+    def stats_pruning(self, m, verbose=True):
         global_null_weights = 0
         global_total_weights = 0
-        print("Model :")
+        if verbose:
+            print("Model :")
         i = 0
         for name, module in m.named_modules():
             if isinstance(module, torch.nn.Linear):
                 print(module)
                 null_weights = float(torch.sum(module.weight == 0))
                 layer_weights = float(module.weight.nelement())
-                print("Sparsity in Layer {}: {:.2f}%".format(i, 100. * null_weights / layer_weights))
+                print("Sparsity in Layer {}: {:.2f}%".format(name, 100. * null_weights / layer_weights))
                 global_total_weights += layer_weights
                 global_null_weights += null_weights
                 i += 1
-            elif isinstance(module,torch.nn.Conv2d):
+            elif isinstance(module, torch.nn.Conv2d):
                 null_weights = 0
                 layer_weights = 0
                 for idx, channel in enumerate(module.weight):
                     null_weights += float(torch.sum(channel == 0))
                     layer_weights += float(channel.nelement())
-                print("Sparsity in Layer {}: {:.2f}%".format(i, 100. * null_weights / layer_weights))
+                print("Sparsity in Layer {}: {:.2f}%".format(name, 100. * null_weights / layer_weights))
                 global_total_weights += layer_weights
                 global_null_weights += null_weights
                 i += 1
 
             else:
-                print(name, module)
+                if verbose:
+                    print(name, module)
         print("Global Sparsity : {:.2f}%".format(100. * global_null_weights / global_total_weights))
 
 
