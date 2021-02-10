@@ -23,7 +23,7 @@ class Visualizer:
             a, b = indexes
         for i in range(a, b):
             list_loss = self.lists_loss[i]
-            plt.plot(self.list_epochs[:len(list_loss)], list_loss, label="Pa = {}".format(self.list_pruning_amounts[i]))
+            plt.plot(self.list_epochs[:len(list_loss)], list_loss, label="Pa = {:.2f}".format(self.list_pruning_amounts[i]))
         plt.title("Training loss on MNIST")
         plt.legend()
         plt.plot()
