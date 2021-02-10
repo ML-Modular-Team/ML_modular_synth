@@ -75,7 +75,9 @@ class PruningTool:
             else:
                 if verbose:
                     print(name, module)
-        print("Global Sparsity : {:.2f}%".format(100. * global_null_weights / global_total_weights))
+        global_sparsity = 100. * global_null_weights / global_total_weights
+        print("Global Sparsity : {:.2f}%".format(global_sparsity))
+        return global_sparsity
 
 
 class PruningLinear:
