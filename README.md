@@ -26,9 +26,10 @@ We calculate the DFT frequencies and amplitudes with the Fast Fourier Transform 
 ![dddd ](Images/Spectrum.png "DFT Signal Spectrum" )
 
 
-# Find the maximum of the spectral product
 
-# We then calculate the vectors containing the spectral product frequencies and amplitudes. 
+We then calculate the vectors containing the spectral product frequencies and amplitudes. 
+
+# Maximum of the spectral product
 
 ![dddd ](Images/fo_estimation.png  "Maximum amplitude estimation" )
 
