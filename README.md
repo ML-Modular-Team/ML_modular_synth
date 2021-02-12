@@ -19,9 +19,7 @@ f_k = \frac{k}{N_{fft}}
 
 
 the discrete frequency of the DFT, we have 
-\begin{equation}
-    P(f_k) = \prod_{h=1}^{H} |X(f_k h)|
-\end{equation}
+<p align="center"><img src="Images/produit.png" width="100"></p>
 
 We calculate the DFT frequencies and amplitudes with the Fast Fourier Transform algorithm.
 
@@ -40,11 +38,12 @@ We then calculate the vectors containing the spectral product frequencies and am
 
 When the signal is polyphonic, we have a superposition of several harmonic spectrum. The idea is to subtract the harmonic spectrum that corresponds to the f0 we estimated. In order to do so, we need to know where the different harmonics of the fundamental frequency are. The idea is to look for the maximum of the spectrum around each theorical harmics of frequency 
 ![dddd ](https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1)
-$f_h = h \cdot f_0$.
+<p align="center"><img src="Images/fh.png" width="100"></p>
+
 ![dddd ](Images/substraction_harmonics.png  "Detection of the Harmonics" )
 
 # Substraction of the harmonics
-In order to better discern the sounds that are in harmonic relation (and especially the sounds at the octave level) it is preferable not to totally subtract a sound from the mixture, but to try to subtract only its contribution at the level of each harmonic. For this, the principle of spectral smoothness is used. We calculate a smoothed harmonic spectrum where the amplitude of the spectrum at each harmonic $f_h$ is replaced by the average of the amplitudes of the harmonics $f_{h-1}$, $f_h$ and $f_{h+1}$.
+In order to better discern the sounds that are in harmonic relation (and especially the sounds at the octave level) it is preferable not to totally subtract a sound from the mixture, but to try to subtract only its contribution at the level of each harmonic. For this, the principle of spectral smoothness is used. We calculate a smoothed harmonic spectrum where the amplitude of the spectrum at each harmonic f_h is replaced by the average of the amplitudes of the harmonics f_h-1, f_h and f_h+1.
 
 ![dddd ](Images/spectral_smoothness.png  "Substraction of the Harmonics" )
 
