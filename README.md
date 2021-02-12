@@ -15,7 +15,7 @@ f_k = \frac{k}{N_{fft}}
 ```
 
 
-<p align="center"><img src="https://github.com/ML-Modular-Team/ML_modular_synth/tree/pitchdetector/Images/fk.png" width="400"></p>
+<p align="center"><img src="Images/fk.png" width="400"></p>
 
 
 the discrete frequency of the DFT, we have 
