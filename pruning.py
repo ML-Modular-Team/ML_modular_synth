@@ -166,3 +166,144 @@ class PruningConv2D:
 
     def __call__(self, module, inputs):
         module.weight.data = module.weight.data * self.mask
+
+        
+class Trimming:
+    def __init__(self, model):
+        self.init_state = copy.deepcopy(model.state_dict())
+        self.rewind_state = None
+        pass
+
+    def save_rewind_state(self, model):
+        self.rewind_state = copy.deepcopy(model.state_dict())
+
+    def replace_parameters(module, target_weight, target_bias=None):
+        module.weight = nn.Parameter(torch.from_numpy(target_weight).to(self.args.device))
+        if target_bias is not None:
+            module.bias = nn.Parameter(torch.from_numpy(target_bias).to(self.args.device))
+    
+    def select_locally(self, module, name, amount):
+        weights = self.module.weight.clone()
+        cw = torch.sum(weights.abs(), 1)
+        _, indices = cw.sort()
+        cutting_index = int(amount * indices.shape[0])
+        self.to_keep[name], _ =  indices[cutting_index:].sort()
+        
+    def get_global_criterion(self, model, amount):
+        norm_values = torch.empty((0))
+        for name, module in model.named_modules():
+            # skip non-leaf modules
+            if len(list(module.children())) > 0: 
+                continue
+            # skip non-prunable layers
+            if (hasattr(m, 'unprunable') and m.unprunable):
+                continue
+            weights = self.module.weight.clone()
+            cw = torch.sum(weights.abs(), 1)/(weights.shape[1]*weights.max())
+            norm_values = torch.cat((norm_values, cw), 0)
+        
+        _, indices = cw.sort()
+        cutting_value = cw[int(amount * indices.shape[0])]
+        return cutting_value
+
+    def select_globally(self, module, name, cutting_value):
+        weights = self.module.weight.clone()
+        cw = torch.sum(weights.abs(), 1)
+        self.to_keep[name] =  (cw >= cutting_value).nonzero()
+    
+    def trim_locally(self, model, amount):
+        # select which units to remove
+        for name, module in model.named_modules():
+            # skip non-leaf modules
+            if len(list(module.children())) > 0: 
+                continue
+            # skip non-prunable layers
+            if (hasattr(m, 'unprunable') and m.unprunable):
+                continue
+            self.select_locally(module, name, amount)
+        
+        # Reset weights to the rewind state
+        if self.rewind_state is not None: # in case rewinding is not done beforehand
+            for name, param in model.named_parameters(): 
+                param.data = self.rewind_state[name].clone()
+        else:
+            for name, param in model.named_parameters(): 
+                param.data = self.init_state[name].clone()
+        
+        # trim neuron units (lines on current layer and columns on the following layer)
+        prev_layer_kept = None
+        for name, module in model.named_modules():
+            # skip non-leaf modules
+            if len(list(module.children())) > 0: 
+                continue
+                        
+            kept_weights = m.weight.data.cpu().numpy()
+            # remove columns because of previous layer trimming
+            if prev_layer_kept is not None:
+                kept_weights = kept_weights[:, prev_layer_kept]
+            
+            # Ignore untrimmed layers
+            if name not in self.to_keep:
+                prev_layer_kept = None
+            else:
+                to_keep = self.to_keep[name]
+                kept_weights = kept_weights[to_keep , :]
+                prev_layer_kept = to_keep
+                
+            if (hasattr(m, 'bias')):
+                kept_biases = m.bias.data.cpu().numpy()[to_keep]
+                self.replace_parameters(module, kept_weights, kept_biases)
+            self.replace_parameters(module, kept_weights)
+            
+            
+    def trim_globally(self, model, amount):
+        
+        # compute global criterion
+        cutting_value = self.compute_global_criterion(self, model, amount)
+        
+        # select which units to remove
+        for name, module in model.named_modules():
+            # skip non-leaf modules
+            if len(list(module.children())) > 0: 
+                continue
+            # skip non-prunable layers
+            if (hasattr(m, 'unprunable') and m.unprunable):
+                continue
+            self.select_globally(module, name, cutting_value)
+        
+        # Reset weights to the rewind state
+        if self.rewind_state is not None: # in case rewinding is not done beforehand
+            for name, param in model.named_parameters(): 
+                param.data = self.rewind_state[name].clone()
+        else:
+            for name, param in model.named_parameters(): 
+                param.data = self.init_state[name].clone()
+        
+        # trim neuron units (lines on current layer and columns on the following layer)
+        prev_layer_kept = None
+        for name, module in model.named_modules():
+            # skip non-leaf modules
+            if len(list(module.children())) > 0: 
+                continue
+                        
+            kept_weights = m.weight.data.cpu().numpy()
+            # remove columns because of previous layer trimming
+            if prev_layer_kept is not None:
+                kept_weights = kept_weights[:, prev_layer_kept]
+            
+            # Ignore untrimmed layers
+            if name not in self.to_keep:
+                prev_layer_kept = None
+            else:
+                to_keep = self.to_keep[name]
+                kept_weights = kept_weights[to_keep , :]
+                prev_layer_kept = to_keep
+                
+            if (hasattr(m, 'bias')):
+                kept_biases = m.bias.data.cpu().numpy()[to_keep]
+                self.replace_parameters(module, kept_weights, kept_biases)
+            self.replace_parameters(module, kept_weights)        
+            
+            
+            
+                
