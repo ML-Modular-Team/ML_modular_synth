@@ -9,14 +9,15 @@ Your browser does not support the audio element.
 
 
 
-The spectral product is calculated by multiplying H compressed versions of the spectrum. Let's call 
+The spectral product is calculated by multiplying H compressed versions of the spectrum. Let's call the discrete frequency of the DFT:
 
 
 
 <p align="center"><img src="Images/fk.png" width="100"></p>
 
 
-the discrete frequency of the DFT, we have 
+We have the spectral product: 
+
 <p align="center"><img src="Images/produit.png" width="200"></p>
 
 We calculate the DFT frequencies and amplitudes with the Fast Fourier Transform algorithm.
