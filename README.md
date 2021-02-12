@@ -13,9 +13,10 @@ The spectral product is calculated by multiplying H compressed versions of the s
 ```math
 f_k = \frac{k}{N_{fft}}
 ```
-```
+
+<img width=“964” alt=“jav” src=“https://user-images.githubusercontent.com/266841/38990411-68408544-4397-11e8-9e87-ca5a86c5508b.png 23”>
 <p align="center"><img src="https://user-images.githubusercontent.com/266841/38990411-68408544-4397-11e8-9e87-ca5a86c5508b.png" width="400"></p>
-```
+
 
 the discrete frequency of the DFT, we have 
 \begin{equation}
