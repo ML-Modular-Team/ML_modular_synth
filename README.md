@@ -22,15 +22,14 @@ We have the spectral product:
 
 We calculate the DFT frequencies and amplitudes with the Fast Fourier Transform algorithm.
 
-We then calculate the vectors containing the spectral product frequencies and amplitudes. 
-### Source loudness and its reconstruction for sample n°5
+
 ![dddd ](Images/Spectrum.png "DFT Signal Spectrum" )
 
 
 # Find the maximum of the spectral product
 
 # We then calculate the vectors containing the spectral product frequencies and amplitudes. 
-### Source loudness and its reconstruction for sample n°5
+
 ![dddd ](Images/fo_estimation.png  "Maximum amplitude estimation" )
 
 
