@@ -15,7 +15,7 @@ f_k = \frac{k}{N_{fft}}
 ```
 
 
-<p align="center"><img src="Images/fk.png" width="400"></p>
+<p align="center"><img src="Images/fk.png" width="100"></p>
 
 
 the discrete frequency of the DFT, we have 
