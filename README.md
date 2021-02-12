@@ -60,7 +60,7 @@ The previous steps are then iterated until a certain stopping criterion is verif
 
 ![ggg ](Images/algorithm_process3.png "Loudness Source et Loudness Reconstruite du sample 5")
 
-The algorithm succeeded in extracting the frequency 332, which corresponds to the note E4. 
+The algorithm succeeded in extracting the frequency 332, which corresponds to the note E4 which was indeed in the piano chord of the studied audio sample. 
 
 <audio controls>
   <source src="samples/A4_piano.mp3" type="audio/mp3">
