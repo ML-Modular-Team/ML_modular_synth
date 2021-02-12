@@ -1,5 +1,7 @@
 # Spectral Product Algorithm 
 
+
+
 ### We are going to estimate the F0 of this multipitch piano sample: A3 C4 E4 G4
 
 <audio controls>
@@ -59,4 +61,9 @@ The previous steps are then iterated until a certain stopping criterion is verif
 ![ggg ](Images/algorithm_process3.png "Loudness Source et Loudness Reconstruite du sample 5")
 
 The algorithm succeeded in extracting the frequency 332, which corresponds to the note E4. 
+
+<audio controls>
+  <source src="samples/A4_piano.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
 
