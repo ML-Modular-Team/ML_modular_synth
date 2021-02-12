@@ -28,7 +28,7 @@ class Visualizer:
         for i in range(a, b):
             list_loss = self.lists_training_loss[i]
             ax.plot(self.list_epochs[:len(list_loss)], list_loss, label="Pa = {:.2f}".format(self.list_global_sparsity[i]))
-        ax.title("Training loss on MNIST")
+        ax.set_title("Training loss on MNIST")
         ax.legend()
         return ax
 
@@ -37,7 +37,7 @@ class Visualizer:
         list_final_loss = [elt[-1] for elt in self.lists_training_loss]
         f, ax = plt.subplots(figsize=(10, 10))
         ax.plot(self.list_global_sparsity, list_final_loss, label="loss")
-        ax.title("Training loss after {} epochs".format(self.list_epochs[-1]))
+        ax.set_title("Training loss after {} epochs".format(self.list_epochs[-1]))
         ax.legend()
         return ax
         #return plt.show()
@@ -45,7 +45,7 @@ class Visualizer:
     def show_test_loss(self):
         f, ax = plt.subplots(figsize=(10, 10))
         ax = plt.plot(self.list_global_sparsity, self.list_test_loss, label="loss")
-        #fig.title("Test loss after {} epochs training".format(self.list_epochs[-1]))
+        ax.set_title("Test loss after {} epochs training".format(self.list_epochs[-1]))
         ax.legend()
         return ax
         #return plt.show()
