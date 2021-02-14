@@ -1,33 +1,73 @@
 import math
 import numpy as np
 import torch
-import torch.nn.functional as f
+import torch.nn as nn
+import torch.fft as fft
 
-
+# Additive Harmonic Synthesizer
 class HarmonicSynth():
     
     def __init__(self, samplerate=16000):
         self.samplerate = samplerate
 
-    def get_signal(self, f0, amp, harm_distrib):
+    def get_signal(self, f0, total_amp, harm_amps):
         
         # Init parameters
-        n_batch, n_samples, n_harmonics = np.shape(harm_distrib)
+        batch_size, n_samples, n_harmonics = np.shape(harm_amps)
 
         # Create the harmonic frequencies envelopes
         ratio_harms = torch.linspace(1.0, float(n_harmonics), n_harmonics)
-        freqs = f0[:, :, np.newaxis] * ratio_harms # [n_batch, n_samples, n_harmonics]
-        harm_distrib_n = f.normalize(harm_distrib, p=1, dim=2) # normalize harmonic distribution
+        freqs = f0[:, :, np.newaxis] * ratio_harms.to(f0) # [batch_size, n_samples, n_harmonics]
+        freqs = torch.where(freqs > (self.samplerate / 2),
+                            torch.zeros_like(freqs),
+                            freqs)
         
         # Compute instant phases
         omegas = 2 * math.pi * freqs / float(self.samplerate)
         phases = torch.cumsum(omegas, axis=1)
         
         # Compute data from phases
-        data = harm_distrib_n * torch.sin(phases) # [n_batch, n_samples, n_harmonics]
+        data = harm_amps * torch.sin(phases) # [batch_size, n_samples, n_harmonics]
         
         # Synthesize audio data with the contribution of every harmonic
-        audio = amp * torch.sum(data, 2) # [n_batch, n_samples]
-        audio /= np.abs(audio).max() # normalize audio
+        audio = total_amp * torch.sum(data, 2) # [batch_size, n_samples]
 
+        return audio
+
+
+# Subtractive Synthesizer with Noise Filtering
+class FilteredNoise():
+    
+    def __init__(self, samplerate=16000):
+        self.samplerate = samplerate
+
+    def get_signal(self, noise_mag):
+        
+        # Init parameters
+        batch_size, n_samples, n_filter_banks = np.shape(noise_mag)
+        
+        # Create noise signal
+        noise = torch.rand([batch_size, n_samples]) * 2 - 1 # noise values between -1 and 1
+        
+        # Compute inpulse response from magnitude
+        noise_mag_compl = torch.complex(noise_mag, torch.zeros([batch_size, n_samples, n_filter_banks]))
+        impulse_response = torch.fft.irfft(noise_mag_compl)
+        
+        # Filter noise signal
+        audio = nn.Conv1d(noise, impulse_response)
+        
+        return audio
+
+
+# Simple White Reverb
+class SimpleReverb():
+    
+    def __init__(self, samplerate=16000):
+        self.samplerate = samplerate
+
+    def get_signal(self, audio_input, reverb_ir):
+        
+        # Get audio input through reverb impulse response
+        audio = nn.Conv1d(audio_input, reverb_ir)
+        
         return audio
