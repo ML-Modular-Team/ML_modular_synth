@@ -1,0 +1,8 @@
+# Concept
+
+The idea is to build a PureData "pipeline" for wav sample which will be processed. Some descriptors (pitch, loudness, etc) will be extracted from the wav sample and and 
+fed the DDSP trained model. 
+Sigmund function extract the pitch and the loudness in real-time
+
+We will thus obtain an output wav in return which will be the original audio "timbre transfered" with the ddsp. 
+
