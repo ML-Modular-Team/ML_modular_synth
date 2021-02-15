@@ -191,9 +191,13 @@ class Trimming:
     def select_locally(self, module, name, amount):
         weights = module.weight.clone()
         cw = torch.sum(weights.abs(), 1)
-        _, indices = cw.sort()
+        cw_sorted, indices = cw.sort()
+        print(cw_sorted.shape)
+        print(indices.shape)
         cutting_index = int(amount * indices.shape[0])
-        self.to_keep[name], _ =  indices[cutting_index:].sort()
+        indices_to_keep = indices[cutting_index:].clone()
+        self.to_keep[name], _ =  indices_to_keep.sort()
+        print(self.to_keep[name].shape)
         
     def get_global_criterion(self, model, amount):
         norm_values = torch.empty((0))
