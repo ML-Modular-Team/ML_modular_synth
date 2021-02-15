@@ -265,7 +265,7 @@ class Trimming:
                     self.replace_parameters(module, kept_weights, kept_biases)
                 else:
                     self.replace_parameters(module, kept_weights) 
-            
+        self.save_rewind_state(model)
             
     def trim_globally(self, model, amount):
         
@@ -320,6 +320,7 @@ class Trimming:
                     self.replace_parameters(module, kept_weights, kept_biases)
                 else:
                     self.replace_parameters(module, kept_weights)        
+        self.save_rewind_state(model)
             
             
             
