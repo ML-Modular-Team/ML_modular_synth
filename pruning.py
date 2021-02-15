@@ -200,15 +200,15 @@ class Trimming:
         print(self.to_keep[name].shape)
         
     def get_global_criterion(self, model, amount):
-        norm_values = torch.empty((0))
+        norm_values = torch.empty((0)).to(self.device)
         for name, module in model.named_modules():
             # skip non-leaf modules
             if len(list(module.children())) > 0: 
                 continue
             # skip non-prunable layers
-            if (hasattr(m, 'unprunable') and m.unprunable):
+            if (hasattr(module, 'unprunable') and module.unprunable):
                 continue
-            weights = self.module.weight.clone()
+            weights = module.weight.clone()
             cw = torch.sum(weights.abs(), 1)/(weights.shape[1]*weights.max())
             norm_values = torch.cat((norm_values, cw), 0)
         
@@ -217,9 +217,9 @@ class Trimming:
         return cutting_value
 
     def select_globally(self, module, name, cutting_value):
-        weights = self.module.weight.clone()
-        cw = torch.sum(weights.abs(), 1)
-        self.to_keep[name] =  (cw >= cutting_value).nonzero()
+        weights = module.weight.clone()
+        cw = torch.sum(weights.abs(), 1)/(weights.shape[1]*weights.max())
+        self.to_keep[name] =  (cw >= cutting_value).nonzero().squeeze()
     
     def trim_locally(self, model, amount):
         # select which units to remove
@@ -274,17 +274,23 @@ class Trimming:
     def trim_globally(self, model, amount):
         
         # compute global criterion
-        cutting_value = self.compute_global_criterion(self, model, amount)
-        
+        cutting_value = self.get_global_criterion(model, amount)
+        to_transfer = None
         # select which units to remove
         for name, module in model.named_modules():
             # skip non-leaf modules
             if len(list(module.children())) > 0: 
                 continue
             # skip non-prunable layers
-            if (hasattr(m, 'unprunable') and m.unprunable):
+            if (hasattr(module, 'unprunable') and module.unprunable):
                 continue
-            self.select_globally(module, name, cutting_value)
+            if to_transfer == None:
+                self.select_globally(module, name, cutting_value)
+            else:
+                self.to_keep[name] = self.to_keep[to_transfer].clone()
+                to_transfer = None
+            if (hasattr(module, 'transfer_trim') and module.transfer_trim):
+                to_transfer = name
         
         # Reset weights to the rewind state
         if self.rewind_state is not None: # in case rewinding is not done beforehand
@@ -301,7 +307,7 @@ class Trimming:
             if len(list(module.children())) > 0: 
                 continue
                         
-            kept_weights = m.weight.data.cpu().numpy()
+            kept_weights = module.weight.data.cpu().numpy()
             # remove columns because of previous layer trimming
             if prev_layer_kept is not None:
                 kept_weights = kept_weights[:, prev_layer_kept]
@@ -311,19 +317,18 @@ class Trimming:
                 prev_layer_kept = None
                 self.replace_parameters(module, kept_weights)                        
             else:
-                to_keep = self.to_keep[name]
+                to_keep = self.to_keep[name].cpu()
                 kept_weights = kept_weights[to_keep , :]
-                
                 # Special case for multiple layers taking the same input
                 if (hasattr(module, 'transfer_trim') and module.transfer_trim):
                     pass
                 else:
                     prev_layer_kept = to_keep                
-                if (hasattr(m, 'bias')):
+                if (hasattr(module, 'bias')):
                     kept_biases = module.bias.data.cpu().numpy()[to_keep]
                     self.replace_parameters(module, kept_weights, kept_biases)
                 else:
-                    self.replace_parameters(module, kept_weights)        
+                    self.replace_parameters(module, kept_weights) 
         self.save_rewind_state(model)
             
             
