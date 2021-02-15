@@ -7,7 +7,7 @@ from torchvision.utils import save_image
 import numpy as np
 import torch.nn.utils.prune as prune
 import matplotlib.pyplot as plt
-
+import copy
 
 class PruningTool:
     def __init__(self):
@@ -104,6 +104,7 @@ class PruningGRU:
         self.mask_ih = None
         self.mask_hh = None
         self.module = module
+        
 
     def set_mask_locally(self, amount):
         # reset mask for concatenation of sub masks
@@ -172,18 +173,23 @@ class Trimming:
     def __init__(self, model):
         self.init_state = copy.deepcopy(model.state_dict())
         self.rewind_state = None
+        self.to_keep = dict()
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda:0")
+        else:
+            self.device = torch.device("cpu")
         pass
 
     def save_rewind_state(self, model):
         self.rewind_state = copy.deepcopy(model.state_dict())
 
-    def replace_parameters(module, target_weight, target_bias=None):
-        module.weight = nn.Parameter(torch.from_numpy(target_weight).to(self.args.device))
+    def replace_parameters(self, module, target_weight, target_bias=None):
+        module.weight = nn.Parameter(torch.from_numpy(target_weight).to(self.device))
         if target_bias is not None:
-            module.bias = nn.Parameter(torch.from_numpy(target_bias).to(self.args.device))
+            module.bias = nn.Parameter(torch.from_numpy(target_bias).to(self.device))
     
     def select_locally(self, module, name, amount):
-        weights = self.module.weight.clone()
+        weights = module.weight.clone()
         cw = torch.sum(weights.abs(), 1)
         _, indices = cw.sort()
         cutting_index = int(amount * indices.shape[0])
@@ -218,7 +224,7 @@ class Trimming:
             if len(list(module.children())) > 0: 
                 continue
             # skip non-prunable layers
-            if (hasattr(m, 'unprunable') and m.unprunable):
+            if (hasattr(module, 'unprunable') and module.unprunable):
                 continue
             self.select_locally(module, name, amount)
         
@@ -237,23 +243,28 @@ class Trimming:
             if len(list(module.children())) > 0: 
                 continue
                         
-            kept_weights = m.weight.data.cpu().numpy()
+            kept_weights = module.weight.data.cpu().numpy()
             # remove columns because of previous layer trimming
             if prev_layer_kept is not None:
                 kept_weights = kept_weights[:, prev_layer_kept]
             
-            # Ignore untrimmed layers
+            # Ignore untrimmable layers
             if name not in self.to_keep:
                 prev_layer_kept = None
+                self.replace_parameters(module, kept_weights)                        
             else:
-                to_keep = self.to_keep[name]
+                to_keep = self.to_keep[name].cpu()
                 kept_weights = kept_weights[to_keep , :]
-                prev_layer_kept = to_keep
-                
-            if (hasattr(m, 'bias')):
-                kept_biases = m.bias.data.cpu().numpy()[to_keep]
-                self.replace_parameters(module, kept_weights, kept_biases)
-            self.replace_parameters(module, kept_weights)
+                # Special case for multiple layers taking the same input
+                if (hasattr(module, 'transfer_trim') and module.transfer_trim):
+                    pass
+                else:
+                    prev_layer_kept = to_keep                
+                if (hasattr(module, 'bias')):
+                    kept_biases = module.bias.data.cpu().numpy()[to_keep]
+                    self.replace_parameters(module, kept_weights, kept_biases)
+                else:
+                    self.replace_parameters(module, kept_weights) 
             
             
     def trim_globally(self, model, amount):
@@ -291,18 +302,24 @@ class Trimming:
             if prev_layer_kept is not None:
                 kept_weights = kept_weights[:, prev_layer_kept]
             
-            # Ignore untrimmed layers
+            # Ignore untrimmable layers
             if name not in self.to_keep:
                 prev_layer_kept = None
+                self.replace_parameters(module, kept_weights)                        
             else:
                 to_keep = self.to_keep[name]
                 kept_weights = kept_weights[to_keep , :]
-                prev_layer_kept = to_keep
                 
-            if (hasattr(m, 'bias')):
-                kept_biases = m.bias.data.cpu().numpy()[to_keep]
-                self.replace_parameters(module, kept_weights, kept_biases)
-            self.replace_parameters(module, kept_weights)        
+                # Special case for multiple layers taking the same input
+                if (hasattr(module, 'transfer_trim') and module.transfer_trim):
+                    pass
+                else:
+                    prev_layer_kept = to_keep                
+                if (hasattr(m, 'bias')):
+                    kept_biases = module.bias.data.cpu().numpy()[to_keep]
+                    self.replace_parameters(module, kept_weights, kept_biases)
+                else:
+                    self.replace_parameters(module, kept_weights)        
             
             
             
