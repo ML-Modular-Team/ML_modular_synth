@@ -17,6 +17,35 @@ The Differentiable Digital Signal Processing relies on additive synthesis thanks
 
 The model is trained with instrument samples (wav files) and tries to learn the parameters provided to the synthesizer part in order to produce the sample. Then we compare the reconstructed sound with the original sample by calculating a multi-scale spectogram loss. 
 
+## Original sample n°1
+<audio controls>
+  <source src="samples/test2_original.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
+
+## Reconstructed sample n°1
+<audio controls>
+  <source src="samples/test2_original.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
+
+![dddd ](Images/test2_comparison.png  )
+
+
+## Original sample n°1
+<audio controls>
+  <source src="samples/test3_original.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
+
+## Reconstructed sample n°1
+<audio controls>
+  <source src="samples/test3_original.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
+
+![dddd ](Images/test3_comparison.png  )
+
 
 # 2. Pruning/Trimming
 
