@@ -25,7 +25,7 @@ Your browser does not support the audio element.
 
 ### Reconstructed sample n°1
 <audio controls>
-  <source src="samples/test2_reconstructed.mp3" type="audio/mp3">
+  <source src="samples/test2_reconstucted.mp3" type="audio/mp3">
 Your browser does not support the audio element.
 </audio>
 
