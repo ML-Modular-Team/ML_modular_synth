@@ -71,7 +71,7 @@ Your browser does not support the audio element.
 
 Trained on violin sample, the DDSP learnt the timbre of the violin. To experiment it, we loaded the vocal and generated a new audio sample with the trained DDSP model.
 <audio controls>
-  <source src="samples/better_daft" type="audio/mp3">
+  <source src="samples/better_daft.mp3" type="audio/mp3">
 Your browser does not support the audio element.
 </audio>
 
