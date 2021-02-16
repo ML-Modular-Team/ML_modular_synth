@@ -19,11 +19,28 @@ The model is trained with instrument samples (wav files) and tries to learn the 
 
 ### Original sample n°1
 <audio controls>
-  <source src="samples/test2_original.mp3" type="audio/mp3">
+  <source src="samples/origin.mp3" type="audio/mp3">
 Your browser does not support the audio element.
 </audio>
 
 ### Reconstructed sample n°1
+<audio controls>
+  <source src="samples/reconstruit.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
+
+
+
+
+
+
+### Original sample n°2
+<audio controls>
+  <source src="samples/test2_original.mp3" type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
+
+### Reconstructed sample n°2
 <audio controls>
   <source src="samples/test2_reconstucted.mp3" type="audio/mp3">
 Your browser does not support the audio element.
@@ -32,13 +49,13 @@ Your browser does not support the audio element.
 ![dddd ](Images/test2_comparison.png  )
 
 
-### Original sample n°1
+### Original sample n°3
 <audio controls>
   <source src="samples/test3_original.mp3" type="audio/mp3">
 Your browser does not support the audio element.
 </audio>
 
-### Reconstructed sample n°1
+### Reconstructed sample n°3
 <audio controls>
   <source src="samples/test3_reconstucted.mp3" type="audio/mp3">
 Your browser does not support the audio element.
