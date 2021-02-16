@@ -1,6 +1,6 @@
 # Machine Learning Modular Synthesizer
 
-![dddd ](Images/modular.jpeg)
+![dddd ](Images/modular.jpeg  )
 
 
 This project aims at embedding a Deep Generative model of audio in a small computer (Raspberry Pi). We create a communication between a Modular Synthesizer and the computer to control the parameters of the Deep model. That way, our modular synthesizer will be able to send a signal and receive another one from the computer. The computer is transformed into a modular Rack module...
