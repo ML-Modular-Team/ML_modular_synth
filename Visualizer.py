@@ -25,7 +25,7 @@ class Visualizer:
         else:
             a, b = indexes
 
-        f, ax = plt.subplots(figsize=(10, 10))
+        f, ax = plt.subplots(figsize=(15, 10))
         for i in range(a, b):
             list_loss = self.lists_training_loss[i]
             ax.plot(self.list_epochs[:len(list_loss)], list_loss/np.mean(self.lists_training_loss[0]), label="Sp = {:.2f}".format(self.list_global_sparsity[i]))
@@ -38,7 +38,7 @@ class Visualizer:
     def show_score_pruning(self):
         """Plots the evolution of the last training when the pruning ratio increase"""
         list_final_loss = np.array([elt[-1] for elt in self.lists_training_loss])
-        f, ax = plt.subplots(figsize=(10, 10))
+        f, ax = plt.subplots(figsize=(15, 10))
         ax.plot(self.list_global_sparsity, list_final_loss/list_final_loss[0], label="loss")
         ax.set_title("Training loss after {} epochs".format(self.list_epochs[-1]))
         ax.set_xlabel("Global Sparsity")
@@ -47,7 +47,7 @@ class Visualizer:
         return ax
 
     def show_test_loss(self):
-        f, ax = plt.subplots(figsize=(10, 10))
+        f, ax = plt.subplots(figsize=(15, 10))
         ax.plot(self.list_global_sparsity, self.list_test_loss/self.list_test_loss[0], label="loss")# normalization by the loss of the biggest model
         ax.set_title("Test loss after {} epochs training".format(self.list_epochs[-1]))
         ax.set_xlabel("Global Sparsity")
