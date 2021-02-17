@@ -32,7 +32,7 @@ class Visualizer:
         ax.set_title("Training loss on MNIST")
         ax.set_xlabel("number of epochs")
         ax.set_ylabel("Training loss")
-        ax.legend()
+        ax.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
         return ax
 
     def show_score_pruning(self):
