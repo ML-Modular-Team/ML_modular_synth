@@ -76,7 +76,7 @@ Your browser does not support the audio element.
 </audio>
 
 <audio controls>
-  <source src="samples/better_daft_reconstructed.mp3" type="audio/mp3">
+  <source src="samples/daft_noise.mp3" type="audio/mp3">
 Your browser does not support the audio element.
 </audio>
 
